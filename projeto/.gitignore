@@ -1,0 +1,5 @@
+*.txt
+*.csv
+*.zip
+analyzer_seq
+analyzer_par_*

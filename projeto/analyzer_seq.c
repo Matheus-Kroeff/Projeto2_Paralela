@@ -6,7 +6,7 @@
 int main(int argc, char** argv) {
     if (argc < 2) return printf("Uso: %s <log_file>\n", argv[0]), 1;
 
-    // Fase 1: Construção a partir do manifest
+    // Construção a partir do manifest
     HashTable* ht = ht_create(131071);
     FILE* f_man = fopen("manifest.txt", "r");
     char line[1024];
@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
     }
     fclose(f_man);
 
-    // Fase 2: Processamento do Log
+    // Processamento do Log
     FILE* f_log = fopen(argv[1], "r");
     char url[512];
     while (fgets(line, sizeof(line), f_log)) {
