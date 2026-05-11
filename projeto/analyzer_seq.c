@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "hash_table.h"
+
+int main(int argc, char** argv) {
+    if (argc < 2) return printf("Uso: %s <log_file>\n", argv[0]), 1;
+
+    // Fase 1: Construção a partir do manifest
+    HashTable* ht = ht_create(131071);
+    FILE* f_man = fopen("manifest.txt", "r");
+    char line[1024];
+    while (fgets(line, sizeof(line), f_man)) {
+        line[strcspn(line, "\n")] = 0;
+        ht_put(ht, line);
+    }
+    fclose(f_man);
+
+    // Fase 2: Processamento do Log
+    FILE* f_log = fopen(argv[1], "r");
+    char url[512];
+    while (fgets(line, sizeof(line), f_log)) {
+        // Extrai URL entre "GET " e " HTTP"
+        char *start = strstr(line, "GET ");
+        if (start) {
+            start += 4;
+            char *end = strstr(start, " HTTP");
+            if (end) {
+                size_t len = end - start;
+                strncpy(url, start, len);
+                url[len] = '\0';
+                CacheNode* node = ht_get(ht, url);
+                if (node) node->hit_count++;
+            }
+        }
+    }
+    fclose(f_log);
+
+    ht_save_results(ht, "results.csv");
+    ht_destroy(ht);
+    return 0;
+}
